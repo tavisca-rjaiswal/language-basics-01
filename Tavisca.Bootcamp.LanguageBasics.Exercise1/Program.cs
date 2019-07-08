@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Data;
 
 namespace Tavisca.Bootcamp.LanguageBasics.Exercise1
 {
@@ -22,28 +23,45 @@ namespace Tavisca.Bootcamp.LanguageBasics.Exercise1
 
         public static int FindDigit(string equation)
         {
-            int indexOfQMark = equation.IndexOf("?");
-            int indexOfMult = equation.IndexOf("*");
-            int indexOfEqual = equation.IndexOf("=");
-            int l = 0, cnt = 0, missDig = -1;
-            if (indexOfQMark == 0 || indexOfQMark == indexOfMult + 1 || indexOfQMark == indexOfEqual + 1)
-            {
-                l = 1;
-            }
-            for (; l < 10; l++)
-            {
-                string newEquation = equation.Replace("?", l + "");
-                int A = Convert.ToInt32(newEquation.Substring(0, indexOfMult));
-                int B = Convert.ToInt32(newEquation.Substring(indexOfMult + 1, indexOfEqual - indexOfMult - 1));
-                int C = Convert.ToInt32(newEquation.Substring(indexOfEqual + 1));
-                if (A * B == C)
+            int start, cnt = 0, missDig = -1;
+
+            start = isLeadingDigit(equation) ? 1 : 0;
+
+            for (int digit=start; digit <= 9; digit++)
+            { 
+                string newEquation = equation.Replace("?", digit.ToString());
+                if(isDigitCorrect(newEquation))
                 {
                     cnt++;
-                    missDig = l;
+                    missDig = digit;
                 }
             }
             if (cnt != 1) { missDig = -1; }
             return missDig;
         }
+
+        private static bool isLeadingDigit(string equation)
+        {
+            int indexOfQMark = equation.IndexOf("?");
+            int indexOfMult = equation.IndexOf("*");
+            int indexOfEqual = equation.IndexOf("=");
+
+            if (indexOfQMark == 0 || indexOfQMark == indexOfMult + 1 || indexOfQMark == indexOfEqual + 1)
+            {
+                return true;
+            }
+            return false;
+        }
+
+        private static bool isDigitCorrect(string newEquation)
+        {
+            DataTable dt = new DataTable();
+            if (Convert.ToBoolean(dt.Compute(newEquation, "")))
+            {
+                return true;
+            }
+            return false;
+        }
+
     }
 }
